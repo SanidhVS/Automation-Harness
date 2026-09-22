@@ -1,0 +1,11 @@
+node_modules/
+dist/
+coverage/
+output/
+.rerun/
+.env
+.env.*
+test-results/
+playwright-report/
+*.log
+.DS_Store

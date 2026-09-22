@@ -1,0 +1,4 @@
+dist
+schemas
+coverage
+test/fixture-site/public

@@ -1,0 +1,55 @@
+{
+  "name": "rerun",
+  "version": "0.1.0",
+  "description": "Harness-agnostic, local-first toolkit that turns a one-time AI-assisted browser session into a reusable, deterministic automation that runs with zero AI tokens afterwards.",
+  "type": "module",
+  "bin": {
+    "rerun": "dist/cli/main.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "templates",
+    "schemas"
+  ],
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:unit": "vitest run test/unit",
+    "test:integration": "vitest run test/integration",
+    "test:e2e": "vitest run test/e2e"
+  },
+  "dependencies": {
+    "playwright": "1.63.0",
+    "commander": "15.0.0",
+    "@inquirer/prompts": "8.7.2",
+    "zod": "4.6.5",
+    "tsx": "4.23.15",
+    "jiti": "2.7.0",
+    "env-paths": "4.0.0",
+    "csv-stringify": "6.8.3",
+    "zod-to-json-schema": "3.25.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.6.2",
+    "typescript": "6.0.3",
+    "vitest": "5.0.1",
+    "eslint": "10.11.0",
+    "prettier": "3.9.8",
+    "typescript-eslint": "8.70.1",
+    "eslint-plugin-import-x": "4.17.1"
+  }
+}
