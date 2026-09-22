@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "type": "number",
+      "const": 1
+    },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "baseUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "loginUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "session": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "loggedInCheck": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "indicator": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "role"
+                    },
+                    "role": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "name": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "role",
+                    "name"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "text"
+                    },
+                    "text": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "text"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "const": "urlNotMatching"
+                    },
+                    "pattern": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "type",
+                    "pattern"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            }
+          },
+          "required": [
+            "url",
+            "indicator"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "browser": {
+      "default": {
+        "headless": false
+      },
+      "type": "object",
+      "properties": {
+        "headless": {
+          "default": false,
+          "type": "boolean"
+        },
+        "channel": {
+          "type": "string",
+          "enum": [
+            "chrome"
+          ]
+        }
+      },
+      "required": [
+        "headless"
+      ],
+      "additionalProperties": false
+    },
+    "pacing": {
+      "default": {
+        "minDelayMs": 400,
+        "maxDelayMs": 1200
+      },
+      "type": "object",
+      "properties": {
+        "minDelayMs": {
+          "default": 400,
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        },
+        "maxDelayMs": {
+          "default": 1200,
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "minDelayMs",
+        "maxDelayMs"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "version",
+    "name",
+    "baseUrl",
+    "session",
+    "browser",
+    "pacing"
+  ],
+  "additionalProperties": false
+}

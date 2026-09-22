@@ -12,6 +12,7 @@ export default tseslint.config(
       'test/fixture-site/**',
       'eslint.config.js',
       'vitest.config.ts',
+      'scripts/**',
     ],
   },
   js.configs.recommended,

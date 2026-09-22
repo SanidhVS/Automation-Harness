@@ -23,7 +23,8 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && npm run build:schemas",
+    "build:schemas": "tsx scripts/generate-schemas.ts",
     "lint": "eslint .",
     "format:check": "prettier --check .",
     "test": "vitest run",
@@ -39,8 +40,7 @@
     "tsx": "4.23.15",
     "jiti": "2.7.0",
     "env-paths": "4.0.0",
-    "csv-stringify": "6.8.3",
-    "zod-to-json-schema": "3.25.2"
+    "csv-stringify": "6.8.3"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
