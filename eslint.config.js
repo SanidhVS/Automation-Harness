@@ -41,13 +41,13 @@ export default tseslint.config(
             },
             {
               target: './src/application',
-              from: ['./src/infrastructure', './src/cli', './src/sdk'],
-              message: 'application may only import domain and its own ports',
+              from: ['./src/infrastructure', './src/cli'],
+              message: 'application may only import domain, its own ports, and sdk',
             },
             {
               target: './src/infrastructure',
-              from: ['./src/cli', './src/sdk'],
-              message: 'infrastructure must not import cli or sdk',
+              from: ['./src/cli'],
+              message: 'infrastructure must not import cli',
             },
             {
               target: './src/sdk',

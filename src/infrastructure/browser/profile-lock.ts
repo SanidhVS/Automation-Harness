@@ -2,8 +2,9 @@ import { rmSync } from 'node:fs';
 import { readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { ProfileLockedError } from '../../domain/errors.js';
+import { PRODUCT_NAME, PRODUCT_DISPLAY_NAME } from '../../shared/product.js';
 
-const LOCK_FILE_NAME = '.rerun.lock';
+const LOCK_FILE_NAME = `.${PRODUCT_NAME}.lock`;
 
 interface LockContent {
   readonly pid: number;
@@ -58,7 +59,7 @@ export async function acquireProfileLock(
       const existing = await readLockFile(lockPath);
       if (existing !== null && isProcessAlive(existing.pid)) {
         throw new ProfileLockedError(
-          `Site "${siteName}" is in use by another Rerun process (pid ${String(existing.pid)}). Wait for it to finish.`,
+          `Site "${siteName}" is in use by another ${PRODUCT_DISPLAY_NAME} process (pid ${String(existing.pid)}). Wait for it to finish.`,
         );
       }
       await rm(lockPath, { force: true });

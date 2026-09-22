@@ -1,7 +1,7 @@
 import { stringify } from 'csv-stringify/sync';
+import type { CsvRow } from '../../domain/output.js';
 
-export type CsvValue = string | number | boolean | null;
-export type CsvRow = Record<string, CsvValue>;
+export type { CsvRow, CsvValue } from '../../domain/output.js';
 
 /** Serializes flat rows to RFC 4180 CSV. Columns are the union of keys across all rows, in
  * first-seen order — matching how `output.addRow` builds up columns in the flow SDK. */

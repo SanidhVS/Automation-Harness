@@ -9,8 +9,9 @@ import {
 } from '../../domain/schemas/workspace-config.js';
 import { siteSchema, type Site } from '../../domain/schemas/site.js';
 import { manifestSchema, type Manifest } from '../../domain/schemas/manifest.js';
+import { PRODUCT_NAME } from '../../shared/product.js';
 
-const CONFIG_FILE_NAME = 'rerun.config.json';
+const CONFIG_FILE_NAME = `${PRODUCT_NAME}.config.json`;
 
 function parseJsonFile(raw: string): ValidationResult<unknown> {
   try {

@@ -3,16 +3,19 @@ import type {
   BrowserLauncher,
   LaunchProfileOptions,
   LaunchResult,
+  ProfileLock,
 } from '../../application/ports/browser-launcher.js';
 import type { Logger } from '../../application/ports/logger.js';
 import type { LoggedInIndicator } from '../../domain/schemas/site.js';
 import { ProfileLockedError } from '../../domain/errors.js';
 import { checkSession } from './session-checker.js';
+import { acquireProfileLock } from './profile-lock.js';
+import { PRODUCT_DISPLAY_NAME } from '../../shared/product.js';
 
 const PROFILE_IN_USE_MARKERS = ['already in use', 'singletonlock', 'profile appears to be in use'];
 
 /** True if Playwright's launch failure is Chrome refusing to reuse a profile another
- * process already has open — a race the `.rerun.lock` file didn't catch (Section 9.2). */
+ * process already has open — a race the profile lock file didn't catch (Section 9.2). */
 export function isProfileInUseError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
   const message = error.message.toLowerCase();
@@ -21,7 +24,7 @@ export function isProfileInUseError(error: unknown): boolean {
 
 function toProfileLockedError(siteName: string, cause: unknown): ProfileLockedError {
   return new ProfileLockedError(
-    `Site "${siteName}" is in use by another Rerun process. Wait for it to finish.`,
+    `Site "${siteName}" is in use by another ${PRODUCT_DISPLAY_NAME} process. Wait for it to finish.`,
     { cause },
   );
 }
@@ -70,5 +73,9 @@ export class PlaywrightBrowserLauncher implements BrowserLauncher {
     timeoutMs?: number,
   ): Promise<boolean> {
     return checkSession(page, url, indicator, timeoutMs);
+  }
+
+  async acquireLock(profileDir: string, siteName: string): Promise<ProfileLock> {
+    return acquireProfileLock(profileDir, siteName);
   }
 }

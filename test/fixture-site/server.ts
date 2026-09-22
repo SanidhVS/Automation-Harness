@@ -36,6 +36,125 @@ const feedPage = `<!doctype html><html><body>
 <button>Account menu</button>
 </body></html>`;
 
+const PAGE_SIZE = 10;
+const DEFAULT_TOTAL = 25;
+
+interface JobCard {
+  readonly index: number;
+  readonly title: string;
+  readonly company: string;
+  readonly location: string;
+  readonly link: string;
+}
+
+function jobCard(index: number): JobCard {
+  return {
+    index,
+    title: `Job ${String(index)}`,
+    company: 'Acme',
+    location: 'Remote',
+    link: `/jobs/${String(index)}`,
+  };
+}
+
+function cardHtml(card: JobCard): string {
+  // Tall enough that ~10 cards exceed a default viewport height, so the bottom sentinel on
+  // /infinite starts off-screen and only becomes visible after a real scroll — exercising
+  // helpers.scrollToLoadMore() meaningfully instead of auto-loading everything at once.
+  return `<li class="result" style="height:120px"><a href="${card.link}">${card.title}</a> at <span class="company">${card.company}</span>, <span class="location">${card.location}</span></li>`;
+}
+
+function searchPage(query: URLSearchParams): string {
+  const total = Number(query.get('total') ?? DEFAULT_TOTAL);
+  const page = Number(query.get('page') ?? 1);
+  const q = query.get('q') ?? '';
+  const location = query.get('location') ?? '';
+  const start = (page - 1) * PAGE_SIZE + 1;
+  const end = Math.min(start + PAGE_SIZE - 1, total);
+  const cards: string[] = [];
+  for (let i = start; i <= end; i++) cards.push(cardHtml(jobCard(i)));
+  const hasNext = end < total;
+
+  return `<!doctype html><html><body>
+<form method="get" action="/search">
+  <input type="hidden" name="total" value="${String(total)}">
+  <label>Search jobs <input type="text" name="q" value="${q}"></label>
+  <label>Location <input type="text" name="location" value="${location}"></label>
+  <button type="submit">Search</button>
+</form>
+<ul id="results">${cards.join('')}</ul>
+${hasNext ? `<form method="get" action="/search"><input type="hidden" name="q" value="${q}"><input type="hidden" name="location" value="${location}"><input type="hidden" name="total" value="${String(total)}"><input type="hidden" name="page" value="${String(page + 1)}"><button type="submit">Next</button></form>` : ''}
+</body></html>`;
+}
+
+function infinitePage(query: URLSearchParams): string {
+  const total = Number(query.get('total') ?? DEFAULT_TOTAL);
+  const initialCount = Math.min(PAGE_SIZE, total);
+  const cards: string[] = [];
+  for (let i = 1; i <= initialCount; i++) cards.push(cardHtml(jobCard(i)));
+
+  return `<!doctype html><html><body>
+<ul id="results">${cards.join('')}</ul>
+<div id="sentinel" style="height:1px"></div>
+<script>
+(function () {
+  var total = ${String(total)};
+  var loaded = ${String(initialCount)};
+  var loading = false;
+  var sentinel = document.getElementById('sentinel');
+
+  function loadMore() {
+    if (loading || loaded >= total) return;
+    loading = true;
+    fetch('/infinite/more?offset=' + loaded + '&total=' + total)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        var ul = document.getElementById('results');
+        data.html.forEach(function (li) {
+          var el = document.createElement('div');
+          el.innerHTML = li;
+          ul.appendChild(el.firstChild);
+        });
+        loaded += data.count;
+        loading = false;
+        if (loaded >= total) {
+          observer.disconnect();
+          return;
+        }
+        // Re-observing forces a fresh intersection check: the sentinel's ratio may not
+        // have crossed a threshold since appending (it stayed continuously visible), so
+        // the observer would otherwise never re-fire on its own.
+        observer.unobserve(sentinel);
+        observer.observe(sentinel);
+      });
+  }
+
+  // A real IntersectionObserver, not a 'scroll' listener: fixture pages are short, so a
+  // programmatic scrollTo() may never move scrollY (nothing to scroll), and thus never
+  // fires a native 'scroll' event — the observer fires whenever the sentinel is visible,
+  // scroll or not, matching how real infinite-scroll pages behave when content is short.
+  var observer = new IntersectionObserver(function (entries) {
+    if (entries[0].isIntersecting) loadMore();
+  });
+  observer.observe(sentinel);
+})();
+</script>
+</body></html>`;
+}
+
+function infiniteMore(query: URLSearchParams): {
+  readonly count: number;
+  readonly html: readonly string[];
+} {
+  const total = Number(query.get('total') ?? DEFAULT_TOTAL);
+  const offset = Number(query.get('offset') ?? 0);
+  const start = offset + 1;
+  const end = Math.min(start + PAGE_SIZE - 1, total);
+  const html: string[] = [];
+  for (let i = start; i <= end; i++) html.push(cardHtml(jobCard(i)));
+  return { count: html.length, html };
+}
+
 function send(
   res: ServerResponse,
   status: number,
@@ -87,6 +206,35 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
       return;
     }
     send(res, 200, feedPage);
+    return;
+  }
+
+  if (url.pathname === '/search' && req.method === 'GET') {
+    if (!isLoggedIn) {
+      redirect(res, '/login');
+      return;
+    }
+    send(res, 200, searchPage(url.searchParams));
+    return;
+  }
+
+  if (url.pathname === '/infinite' && req.method === 'GET') {
+    if (!isLoggedIn) {
+      redirect(res, '/login');
+      return;
+    }
+    send(res, 200, infinitePage(url.searchParams));
+    return;
+  }
+
+  if (url.pathname === '/infinite/more' && req.method === 'GET') {
+    if (!isLoggedIn) {
+      res.writeHead(401).end();
+      return;
+    }
+    const body = JSON.stringify(infiniteMore(url.searchParams));
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(body);
     return;
   }
 
