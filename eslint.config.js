@@ -60,7 +60,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/cli/**', 'src/infrastructure/logging/**'],
+    files: ['src/cli/**', 'src/infrastructure/logging/**', 'src/infrastructure/prompts/**'],
     rules: {
       'no-console': 'off',
     },
