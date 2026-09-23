@@ -92,7 +92,10 @@ Token cost is the whole point. Every piece of the design reflects it:
 ## Sessions and security
 
 Rerun never asks for, stores, types, or logs a password or one-time code. You log in
-yourself, once, in a real browser window; Rerun reuses the resulting **dedicated** browser
+yourself, once, in a real browser window. That window has no automation attached, so
+sign-in pages that block automated browsers (Google, for one) work normally; set
+`"channel": "chrome"` in the site file to log in with your installed Google Chrome. Rerun
+reuses the resulting **dedicated** browser
 profile (never your everyday Chrome profile, never attached via CDP) stored outside the
 workspace in your OS's app-data directory. Only one process can use a profile at a time —
 Rerun locks it and recovers automatically from a stale lock left by a crashed process.

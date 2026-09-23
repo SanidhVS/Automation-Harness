@@ -4,12 +4,14 @@ import type {
   LaunchProfileOptions,
   LaunchResult,
   ProfileLock,
+  ManualBrowser,
 } from '../../application/ports/browser-launcher.js';
 import type { Logger } from '../../application/ports/logger.js';
 import type { LoggedInIndicator } from '../../domain/schemas/site.js';
 import { ProfileLockedError } from '../../domain/errors.js';
 import { checkSession } from './session-checker.js';
 import { acquireProfileLock } from './profile-lock.js';
+import { openManualBrowser } from './manual-login-browser.js';
 import { PRODUCT_DISPLAY_NAME } from '../../shared/product.js';
 
 const PROFILE_IN_USE_MARKERS = ['already in use', 'singletonlock', 'profile appears to be in use'];
@@ -73,6 +75,14 @@ export class PlaywrightBrowserLauncher implements BrowserLauncher {
     timeoutMs?: number,
   ): Promise<boolean> {
     return checkSession(page, url, indicator, timeoutMs);
+  }
+
+  openForManualLogin(options: {
+    readonly profileDir: string;
+    readonly url: string;
+    readonly preferChrome: boolean;
+  }): Promise<ManualBrowser> {
+    return Promise.resolve(openManualBrowser(options));
   }
 
   async acquireLock(profileDir: string, siteName: string): Promise<ProfileLock> {

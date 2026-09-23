@@ -46,10 +46,15 @@ single-caller abstractions for no benefit.
 | `Clock`           | The current time, for testable timestamps                        | `SystemClock`               |
 | `Logger`          | Human-facing output honoring `--verbose`                         | `ConsoleLogger`             |
 
-`BrowserLauncher` carries `checkSession` and `acquireLock` alongside `launchPersistent`
-rather than being three separate ports — they're all facets of "one browser session
-lifecycle for one site," and application code (`login-site.ts`, `run-automation.ts`) needs
-all three together.
+`BrowserLauncher` carries `checkSession`, `acquireLock`, and `openForManualLogin` alongside
+`launchPersistent` rather than being separate ports — they're all facets of "one browser
+session lifecycle for one site," and application code (`login-site.ts`,
+`run-automation.ts`) needs them together.
+
+`openForManualLogin` deliberately starts a plain browser process with no Playwright or
+remote debugging attached: sign-in pages such as Google's refuse automated browsers. It
+passes `--password-store=basic --use-mock-keychain`, the same flags Playwright uses, so the
+cookies saved during login are encrypted with the same key the automated runs read with.
 
 ## Data contracts (`src/domain/schemas/`)
 

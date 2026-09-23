@@ -19,8 +19,21 @@ export interface ProfileLock {
   release(): Promise<void>;
 }
 
+export interface ManualBrowser {
+  readonly browser: 'chrome' | 'chromium';
+  /** Closes the window gracefully so the browser flushes cookies to the profile. */
+  close(): Promise<void>;
+}
+
 export interface BrowserLauncher {
   launchPersistent(options: LaunchProfileOptions): Promise<LaunchResult>;
+  /** Opens the profile in a plain browser process with no automation attached, for a
+   * human to log in. Sign-in pages such as Google's refuse automated browsers. */
+  openForManualLogin(options: {
+    readonly profileDir: string;
+    readonly url: string;
+    readonly preferChrome: boolean;
+  }): Promise<ManualBrowser>;
   /** Navigates to `url` and evaluates the site's logged-in indicator (Section 9.3). */
   checkSession(
     page: Page,
