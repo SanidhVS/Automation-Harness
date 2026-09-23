@@ -11,7 +11,7 @@ import { ConfigError, ValidationError, WorkspaceNotFoundError } from '../domain/
 import { EXIT_CODES, type ExitCode } from '../domain/exit-codes.js';
 import type { RunSummary } from '../domain/schemas/run-summary.js';
 import { runFlow, type FlowRunLogger } from '../sdk/runner.js';
-import { pruneAriaSnapshot } from '../infrastructure/snapshot/aria-snapshot-pruner.js';
+import { pruneAriaSnapshot } from '../domain/snapshot/aria-snapshot-pruner.js';
 import { PRODUCT_NAME } from '../shared/product.js';
 
 export interface RunAutomationDeps {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { pruneAriaSnapshot } from '../../../src/infrastructure/snapshot/aria-snapshot-pruner.js';
+import { pruneAriaSnapshot } from '../../../src/domain/snapshot/aria-snapshot-pruner.js';
 
 const listSnapshot = `- heading "Jobs" [level=1]
 - list:

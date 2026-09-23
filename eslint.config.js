@@ -2,6 +2,7 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import importPlugin from 'eslint-plugin-import-x';
+import { createTypeScriptImportResolver } from 'eslint-import-resolver-typescript';
 
 export default tseslint.config(
   {
@@ -26,6 +27,9 @@ export default tseslint.config(
     },
     files: ['src/**/*.ts', 'test/**/*.ts'],
     plugins: { import: importPlugin },
+    settings: {
+      'import-x/resolver-next': [createTypeScriptImportResolver()],
+    },
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
