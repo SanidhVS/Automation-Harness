@@ -9,6 +9,7 @@ import { resolveProfileDir, ensureProfileDir } from '../../infrastructure/paths/
 import { PlaywrightBrowserLauncher } from '../../infrastructure/browser/playwright-launcher.js';
 import { ConsoleLogger } from '../../infrastructure/logging/console-logger.js';
 import { PRODUCT_NAME } from '../../shared/product.js';
+import { buildCodegenArgs } from '../../domain/codegen-args.js';
 
 interface RecordOptions {
   readonly name: string;
@@ -41,11 +42,8 @@ async function recordWithFallback(
   preferChrome: boolean,
   logger: ConsoleLogger,
 ): Promise<'codegen' | 'pause-fallback'> {
-  const args = ['--user-data-dir', profileDir, '-o', outputFile];
-  if (preferChrome) args.push('--channel', 'chrome');
-  args.push(url);
   try {
-    await runCodegen(args);
+    await runCodegen(buildCodegenArgs(profileDir, outputFile, url, preferChrome));
     return 'codegen';
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
