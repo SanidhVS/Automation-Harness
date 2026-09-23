@@ -15,6 +15,7 @@ interface NewOptions {
   readonly site: string;
 }
 
+/** Registers `rerun new`. */
 export function registerNewCommand(program: Command): void {
   program
     .command('new <automation>')

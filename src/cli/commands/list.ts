@@ -36,6 +36,7 @@ async function latestRun(
   }
 }
 
+/** Registers `rerun list`. */
 export function registerListCommand(program: Command): void {
   program
     .command('list')

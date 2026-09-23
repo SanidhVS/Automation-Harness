@@ -7,6 +7,7 @@ import { render, runCommand, type GlobalOptions } from '../render.js';
 import { FileWorkspaceStore } from '../../infrastructure/workspace/file-workspace-store.js';
 import { appDataDir } from '../../infrastructure/paths/app-paths.js';
 import { PRODUCT_NAME } from '../../shared/product.js';
+import { EXIT_CODES } from '../../domain/exit-codes.js';
 
 interface CheckResult {
   readonly name: string;
@@ -167,6 +168,7 @@ async function runChecks(cwd: string): Promise<readonly CheckResult[]> {
   ];
 }
 
+/** Registers `rerun doctor`. */
 export function registerDoctorCommand(program: Command): void {
   program
     .command('doctor')
@@ -188,7 +190,7 @@ export function registerDoctorCommand(program: Command): void {
           () => ({ checks: results }),
         );
 
-        if (hasFailure) process.exitCode = 6;
+        if (hasFailure) process.exitCode = EXIT_CODES.environmentProblem;
       });
     });
 }

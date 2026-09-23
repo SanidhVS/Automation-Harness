@@ -18,6 +18,7 @@ interface InspectOptions {
 
 const DEFAULT_MAX_LINES = 150;
 
+/** Registers `rerun inspect`. */
 export function registerInspectCommand(program: Command): void {
   program
     .command('inspect <site>')

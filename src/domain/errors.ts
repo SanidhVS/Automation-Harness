@@ -71,8 +71,3 @@ export class CheckpointUnavailableError extends RerunError {
 export class WorkspaceNotFoundError extends RerunError {
   readonly code = EXIT_CODES.usageError;
 }
-
-/** The runtime environment is unfit to run Rerun (Node too old, browser missing, ...). */
-export class EnvironmentError extends RerunError {
-  readonly code = EXIT_CODES.environmentProblem;
-}

@@ -65,6 +65,7 @@ async function recordWithFallback(
   }
 }
 
+/** Registers `rerun record`. */
 export function registerRecordCommand(program: Command): void {
   program
     .command('record <site>')

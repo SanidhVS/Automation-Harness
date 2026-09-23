@@ -46,6 +46,7 @@ async function findRunFolder(
   throw new ValidationError(`No failed runs found for "${automation}".`);
 }
 
+/** Registers `rerun fix`. */
 export function registerFixCommand(program: Command): void {
   program
     .command('fix <automation>')

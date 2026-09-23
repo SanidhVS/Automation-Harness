@@ -14,7 +14,7 @@ export function renderTemplateString(
   content: string,
   vars: Readonly<Record<string, string>>,
 ): string {
-  return content.replace(/\{\{(\w+)\}\}/g, (whole, key: string) => {
+  return content.replace(/\{\{(\w+)\}\}/g, (_whole, key: string) => {
     const value = vars[key];
     if (value === undefined) {
       throw new Error(`Template references unknown placeholder {{${key}}}.`);

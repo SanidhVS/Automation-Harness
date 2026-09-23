@@ -46,6 +46,7 @@ function parseIndicator(options: SetCheckOptions): LoggedInIndicator {
   throw new ValidationError('One of --role/--name, --text, or --url-not-matching is required.');
 }
 
+/** Registers `rerun site` and its subcommands (add, list, login, set-check, remove). */
 export function registerSiteCommand(program: Command): void {
   const site = program.command('site').description('manage site definitions');
 

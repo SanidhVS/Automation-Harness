@@ -59,6 +59,7 @@ async function promptForMissingParams(
   }
 }
 
+/** Registers `rerun run`. */
 export function registerRunCommand(program: Command): void {
   program
     .command('run <automation>')

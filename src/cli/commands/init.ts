@@ -59,6 +59,7 @@ async function scaffoldWorkspace(dir: string, force: boolean): Promise<void> {
   }
 }
 
+/** Registers `rerun init`. */
 export function registerInitCommand(program: Command): void {
   program
     .command('init [dir]')
