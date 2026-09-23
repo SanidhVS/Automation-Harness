@@ -14,6 +14,7 @@ export default tseslint.config(
       'eslint.config.js',
       'vitest.config.ts',
       'scripts/**',
+      'templates/**',
     ],
   },
   js.configs.recommended,

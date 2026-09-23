@@ -1,10 +1,15 @@
 import { mkdir, writeFile, chmod } from 'node:fs/promises';
-import { dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 import { platform } from 'node:process';
 import { Command } from 'commander';
 import { render, runCommand, type GlobalOptions } from '../render.js';
 import { loadWorkspace } from '../workspace-context.js';
 import { createAutomation } from '../../application/create-automation.js';
+import {
+  renderTemplateFile,
+  templatesDir,
+} from '../../infrastructure/templates/render-template.js';
+import { PRODUCT_NAME } from '../../shared/product.js';
 
 interface NewOptions {
   readonly site: string;
@@ -23,6 +28,12 @@ export function registerNewCommand(program: Command): void {
         await createAutomation(
           {
             store,
+            renderTemplate: (relativePath) =>
+              renderTemplateFile(join(templatesDir(), relativePath), {
+                PRODUCT_NAME,
+                AUTOMATION_NAME: automation,
+                SITE_NAME: cmdOptions.site,
+              }),
             writeFile: async (path, content) => {
               await mkdir(dirname(path), { recursive: true });
               await writeFile(path, content, 'utf8');

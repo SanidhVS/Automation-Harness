@@ -1,0 +1,8 @@
+{
+  "$schema": "./node_modules/{{PRODUCT_NAME}}/schemas/workspace-config.schema.json",
+  "version": 1,
+  "outputDir": "output",
+  "keepRuns": 20,
+  "trace": "on-failure",
+  "profilesDir": null
+}
