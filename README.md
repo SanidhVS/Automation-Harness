@@ -78,7 +78,7 @@ Chrome is recommended but optional (Rerun can download its own Chromium).
 ### macOS
 
 ```sh
-git clone <repository-url> rerun
+git clone https://github.com/SanidhVS/Automation-Harness.git rerun
 cd rerun
 npm install
 npm run build
@@ -98,7 +98,7 @@ export PATH="$(npm prefix -g)/bin:$PATH"
 In **Command Prompt** (or PowerShell):
 
 ```bat
-git clone <repository-url> rerun
+git clone https://github.com/SanidhVS/Automation-Harness.git rerun
 cd rerun
 npm install
 npm run build
