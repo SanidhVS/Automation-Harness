@@ -41,6 +41,7 @@ export interface RunAutomationResult {
   readonly outputFile: string | null;
   readonly rowCount: number;
   readonly errorMessage: string | null;
+  readonly durationMs: number;
 }
 
 function formatErrorText(error: unknown): string {
@@ -164,12 +165,13 @@ export async function runAutomation(
       );
       if (!loggedIn) {
         if (!options.interactive) {
+          const finishedAt = deps.clock.now();
           const summary = buildSummary(
             options.automation,
             site.name,
             resolution.values,
             startedAt,
-            deps.clock.now(),
+            finishedAt,
             'login-required',
             {
               rowCount: 0,
@@ -187,6 +189,7 @@ export async function runAutomation(
             outputFile: null,
             rowCount: 0,
             errorMessage: null,
+            durationMs: finishedAt.getTime() - startedAt.getTime(),
           };
         }
         await launch.context.close();
@@ -197,12 +200,13 @@ export async function runAutomation(
         );
         if (!relogin.loggedIn) {
           await relogin.context.close();
+          const finishedAt = deps.clock.now();
           const summary = buildSummary(
             options.automation,
             site.name,
             resolution.values,
             startedAt,
-            deps.clock.now(),
+            finishedAt,
             'login-required',
             {
               rowCount: 0,
@@ -219,6 +223,7 @@ export async function runAutomation(
             outputFile: null,
             rowCount: 0,
             errorMessage: null,
+            durationMs: finishedAt.getTime() - startedAt.getTime(),
           };
         }
         launch = { context: relogin.context, channelUsed: launch.channelUsed };
@@ -295,6 +300,7 @@ export async function runAutomation(
         outputFile,
         rowCount: result.rowCount,
         errorMessage: null,
+        durationMs: finishedAt.getTime() - startedAt.getTime(),
       };
     }
 
@@ -359,6 +365,7 @@ export async function runAutomation(
       outputFile: null,
       rowCount: 0,
       errorMessage,
+      durationMs: finishedAt.getTime() - startedAt.getTime(),
     };
   } finally {
     await lock.release();

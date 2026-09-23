@@ -15,6 +15,7 @@ export interface WorkspaceStore {
   /** Null when the site file does not exist; a validation result otherwise. */
   readSite(root: string, name: string): Promise<ValidationResult<Site> | null>;
   writeSite(root: string, site: Site): Promise<void>;
+  removeSite(root: string, name: string): Promise<void>;
 
   listAutomations(root: string): Promise<readonly string[]>;
   /** Null when the manifest does not exist; a validation result otherwise. */

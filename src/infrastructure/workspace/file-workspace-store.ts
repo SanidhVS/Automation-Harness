@@ -1,5 +1,5 @@
 import { existsSync } from 'node:fs';
-import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, parse } from 'node:path';
 import type { WorkspaceStore } from '../../application/ports/workspace-store.js';
 import { parseWithSchema, type ValidationResult } from '../../domain/validation.js';
@@ -86,6 +86,10 @@ export class FileWorkspaceStore implements WorkspaceStore {
 
   async writeSite(root: string, site: Site): Promise<void> {
     await writeJsonFile(join(root, 'sites', `${site.name}.json`), site);
+  }
+
+  async removeSite(root: string, name: string): Promise<void> {
+    await rm(join(root, 'sites', `${name}.json`), { force: true });
   }
 
   async listAutomations(root: string): Promise<readonly string[]> {
