@@ -103,8 +103,9 @@ directly for the failure bundle's `snapshot.txt`.
   mode during `record` could emit direct API calls as an alternate flow body.
 - **Other automation engines.** `BrowserLauncher` is the only port that's Playwright-typed
   in its return values; a second `BrowserLauncher` implementation (e.g. a native-app
-  driver) would need the same three methods and nothing else in `application/` would
-  change.
+  driver) would need the same four methods and nothing else in `application/` would
+  change. The same seam would host an "extension mode" that drives a tab in the user's
+  own running Chrome.
 - **Scheduler / run history dashboard.** `run.json` already has everything a dashboard
   would read; nothing in the runner assumes CLI-only invocation.
 - **A step DSL for non-developers.** Would compile to the same `defineFlow` contract flows
