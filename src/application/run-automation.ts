@@ -197,6 +197,7 @@ export async function runAutomation(
           { browserLauncher: deps.browserLauncher, prompter: deps.prompter },
           options.profileDir,
           site,
+          'expired',
         );
         if (!relogin.loggedIn) {
           await relogin.context.close();

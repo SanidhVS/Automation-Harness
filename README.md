@@ -25,27 +25,52 @@ keywords=".NET developer"`) or by double-clicking its generated launcher. No AI 
 Rerun is **generic**: it contains no knowledge of any specific website, company, or
 business. Sites are user-defined data.
 
-## Install
+## Install (from source)
+
+Rerun is not published to npm yet, and the npm name `rerun` belongs to an unrelated
+package, so **`npx rerun ...` from a machine without a local install runs the wrong
+tool.** Install from a clone instead. You need Node.js 20+ and git.
+
+```sh
+git clone <this repo> rerun && cd rerun
+npm install
+npm run build
+npm link                 # puts the `rerun` command on your PATH
+```
+
+Then create a workspace anywhere (outside the repo):
 
 ```sh
 mkdir my-automations && cd my-automations
-npx rerun init
+rerun init --link        # scaffolds the workspace, links rerun in, installs Chromium
 ```
 
-This creates a workspace (`rerun.config.json`, `sites/`, `automations/`, and the
-`/automate` skill for your AI harness) and installs Playwright's Chromium.
+`--link` is required until Rerun is published; without it `init` tries `npm install`,
+which can't find this package on the registry.
+
+**Windows:** run the same commands in PowerShell or Command Prompt. `npm link` puts
+`rerun` in `%APPDATA%\npm`, which the Node.js installer already adds to PATH.
+**macOS:** if `rerun` is "not found" after `npm link`, add `$(npm prefix -g)/bin` to your
+PATH (some Node installs, e.g. version managers, use a non-default prefix).
 
 ## Quick start
 
 ```sh
 rerun site add jobs-example --base-url https://jobs.example.com
 rerun site login jobs-example        # opens a real browser; you log in yourself
+rerun inspect jobs-example --url https://jobs.example.com/feed --interactive-only
+rerun site set-check jobs-example --url https://jobs.example.com/feed --role button --name "Account menu"
 rerun new job-search --site jobs-example
-# edit automations/job-search/manifest.json and flow.ts, or use the /automate skill
+# edit automations/job-search/manifest.json and flow.ts, or use the AI skill below
 rerun run job-search --param count=3    # verify with a small value first
 ```
 
-Or, inside Claude Code / GitHub Copilot, just say `/automate` and describe what you want.
+Or let an AI write it: in Claude Code run `/rerun-automate`, in GitHub Copilot `/automate`,
+and describe what you want. Any other agent can follow `AGENTS.md`.
+
+Browser profiles (your saved logins) are stored per **site name** in your OS app-data
+folder, not in the workspace. Two workspaces that both define a site called `shop` share
+one login.
 
 Once an automation exists, anyone can run it without touching AI at all — from the CLI or
 by double-clicking `automations/<name>/run.sh` (macOS/Linux) or `run.cmd` (Windows).

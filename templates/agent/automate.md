@@ -12,6 +12,9 @@ a question.
 - `/automate` — create a new automation.
 - `/automate fix <name>` — repair a broken one.
 
+(In Claude Code these instructions are the `/{{PRODUCT_NAME}}-automate` skill; in GitHub
+Copilot they are the `/automate` prompt. The modes are the same either way.)
+
 Detect which mode from the user's message: if they name an existing automation and
 describe a failure, use fix mode; otherwise use create mode.
 
@@ -36,7 +39,8 @@ describe a failure, use fix mode; otherwise use create mode.
    The user performs the task once and closes the recorder; the recording is saved to
    `.{{PRODUCT_NAME}}/recordings/<automation>.ts`. Read that file only.
    b. If no demonstration: use
-   `{{PRODUCT_NAME}} inspect <site> --url <url> [--scope "<role>=<name>"] [--interactive-only]`
+   `{{PRODUCT_NAME}} inspect <site> --url <url> [--scope "role=<role>:<name>"] [--interactive-only]`
+   (`--scope` also accepts a CSS selector, e.g. `--scope "#results"`)
    to see only what you need.
    c. Only if a and b fail: use Playwright MCP in snapshot mode. Never request screenshots.
 6. **Scaffold.** `{{PRODUCT_NAME}} new <automation> --site <site>` creates the folder,

@@ -1,7 +1,7 @@
 import { existsSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { basename, join, resolve } from 'node:path';
-import { spawn } from 'node:child_process';
+import { runProcess } from '../run-process.js';
 import { Command } from 'commander';
 import { render, runCommand, type GlobalOptions } from '../render.js';
 import { ValidationError } from '../../domain/errors.js';
@@ -17,17 +17,6 @@ interface InitCommandOptions {
   readonly force?: boolean;
   readonly skipInstall?: boolean;
   readonly updateAgentFiles?: boolean;
-}
-
-function run(cmd: string, args: readonly string[], cwd: string): Promise<void> {
-  return new Promise((resolvePromise, reject) => {
-    const child = spawn(cmd, args, { cwd, stdio: 'inherit' });
-    child.on('error', reject);
-    child.on('exit', (code) => {
-      if (code === 0) resolvePromise();
-      else reject(new Error(`${cmd} ${args.join(' ')} exited with code ${String(code)}`));
-    });
-  });
 }
 
 const WORKSPACE_FILES: ReadonlyArray<readonly [string, string]> = [
@@ -95,11 +84,11 @@ export function registerInitCommand(program: Command): void {
 
         if (cmdOptions.skipInstall !== true) {
           if (cmdOptions.link === true) {
-            await run('npm', ['link', PRODUCT_NAME], dir);
+            await runProcess('npm', ['link', PRODUCT_NAME], dir);
           } else {
-            await run('npm', ['install'], dir);
+            await runProcess('npm', ['install'], dir);
           }
-          await run('npx', ['playwright', 'install', 'chromium'], dir);
+          await runProcess('npx', ['playwright', 'install', 'chromium'], dir);
         }
 
         render(

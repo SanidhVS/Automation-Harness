@@ -1,6 +1,6 @@
 import { mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-import { spawn } from 'node:child_process';
+import { runProcess } from '../run-process.js';
 import { Command } from 'commander';
 import { render, runCommand, type GlobalOptions } from '../render.js';
 import { loadWorkspace } from '../workspace-context.js';
@@ -16,21 +16,6 @@ interface RecordOptions {
   readonly url?: string;
 }
 
-function runCodegen(args: readonly string[]): Promise<void> {
-  return new Promise((resolvePromise, reject) => {
-    const child = spawn('npx', ['playwright', 'codegen', ...args], { stdio: 'inherit' });
-    let stderr = '';
-    child.stderr?.on('data', (chunk: Buffer) => {
-      stderr += chunk.toString();
-    });
-    child.on('error', reject);
-    child.on('exit', (code) => {
-      if (code === 0 || code === null) resolvePromise();
-      else reject(new Error(`playwright codegen exited with code ${String(code)}: ${stderr}`));
-    });
-  });
-}
-
 /** Playwright's recorder normally works via `--user-data-dir` (verified against `playwright
  * codegen --help` while building this command). If a future Playwright version drops that
  * flag, this falls back to a headed `page.pause()` session and tells the user to copy the
@@ -43,7 +28,11 @@ async function recordWithFallback(
   logger: ConsoleLogger,
 ): Promise<'codegen' | 'pause-fallback'> {
   try {
-    await runCodegen(buildCodegenArgs(profileDir, outputFile, url, preferChrome));
+    await runProcess('npx', [
+      'playwright',
+      'codegen',
+      ...buildCodegenArgs(profileDir, outputFile, url, preferChrome),
+    ]);
     return 'codegen';
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);

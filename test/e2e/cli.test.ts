@@ -54,6 +54,11 @@ describe('rerun CLI end to end (Section 14.4)', () => {
     expect(
       JSON.parse(await readFile(join(workspaceRoot, 'rerun.config.json'), 'utf8')),
     ).toMatchObject({ version: 1 });
+    // Keep browser profiles inside the temp workspace, not the real OS app-data folder.
+    await writeFile(
+      join(workspaceRoot, 'rerun.config.json'),
+      JSON.stringify({ version: 1, profilesDir: join(workspaceRoot, '.profiles') }),
+    );
 
     // site add
     const siteAdd = await cli(

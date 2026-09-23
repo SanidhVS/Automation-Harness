@@ -29,7 +29,7 @@ async function listAllFiles(dir: string, base = dir): Promise<string[]> {
     if (entry.isDirectory()) {
       files.push(...(await listAllFiles(full, base)));
     } else {
-      files.push(full.slice(base.length + 1));
+      files.push(full.slice(base.length + 1).replaceAll('\\', '/'));
     }
   }
   return files.sort();
@@ -94,7 +94,9 @@ describe('rerun init produces the Section 7.2 layout', () => {
       expect(content, `${name} has an unrendered placeholder`).not.toMatch(/\{\{\w+\}\}/);
     }
 
-    const runShStat = await stat(join(automationDir, 'run.sh'));
-    expect(runShStat.mode & 0o111).not.toBe(0);
+    if (process.platform !== 'win32') {
+      const runShStat = await stat(join(automationDir, 'run.sh'));
+      expect(runShStat.mode & 0o111).not.toBe(0);
+    }
   });
 });

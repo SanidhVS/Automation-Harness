@@ -22,6 +22,7 @@ export async function loginSite(
   deps: LoginSiteDeps,
   profileDir: string,
   site: Site,
+  reason: 'expired' | 'requested',
 ): Promise<LoginResult> {
   const { context } = await deps.browserLauncher.launchPersistent({
     profileDir,
@@ -31,8 +32,9 @@ export async function loginSite(
   const page = context.pages()[0] ?? (await context.newPage());
   await page.goto(site.loginUrl ?? site.baseUrl);
 
+  const lead = reason === 'expired' ? `Session for "${site.name}" expired. ` : '';
   await deps.prompter.waitForEnter(
-    `Session for "${site.name}" expired. A browser window will open; log in, then press Enter here.`,
+    `${lead}Log in to "${site.name}" in the browser window, then press Enter here.`,
   );
 
   const loggedInCheck = site.session.loggedInCheck;

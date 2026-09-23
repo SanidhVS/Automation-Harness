@@ -1,3 +1,4 @@
+import { pathToFileURL } from 'node:url';
 import type { FlowLoader } from '../../application/ports/flow-loader.js';
 import { isDefinedFlow, type DefinedFlow } from '../../sdk/define-flow.js';
 import { ValidationError } from '../../domain/errors.js';
@@ -20,7 +21,9 @@ async function resolveTsImport(): Promise<TsImportFn | null> {
 async function importModule(flowPath: string): Promise<unknown> {
   const tsImport = await resolveTsImport();
   if (tsImport !== null) {
-    return tsImport(flowPath, import.meta.url);
+    // A file:// URL, not a bare path: Node's ESM loader reads a Windows path's "C:" as a
+    // URL scheme and rejects it.
+    return tsImport(pathToFileURL(flowPath).href, import.meta.url);
   }
   const { createJiti } = await import('jiti');
   return createJiti(import.meta.url).import(flowPath);

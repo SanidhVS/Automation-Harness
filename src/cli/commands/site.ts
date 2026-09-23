@@ -11,6 +11,7 @@ import { resolveProfileDir, ensureProfileDir } from '../../infrastructure/paths/
 import { PlaywrightBrowserLauncher } from '../../infrastructure/browser/playwright-launcher.js';
 import { ConsoleLogger } from '../../infrastructure/logging/console-logger.js';
 import { ReadlinePrompter } from '../../infrastructure/prompts/readline-prompter.js';
+import { PRODUCT_NAME } from '../../shared/product.js';
 
 interface AddOptions {
   readonly baseUrl: string;
@@ -136,14 +137,22 @@ export function registerSiteCommand(program: Command): void {
             { browserLauncher, prompter: new ReadlinePrompter() },
             profileDir,
             result.value,
+            'requested',
           );
           await relogin.context.close();
+          const checkConfigured = result.value.session.loggedInCheck !== undefined;
           render(
             options,
             () => {
-              console.log(relogin.loggedIn ? 'Login succeeded.' : 'Login check still failing.');
+              if (!checkConfigured) {
+                console.log(
+                  `Browser session saved. No login check is configured, so it can't be verified; run "${PRODUCT_NAME} site set-check ${name} ..." to add one.`,
+                );
+              } else {
+                console.log(relogin.loggedIn ? 'Login verified.' : 'Login check still failing.');
+              }
             },
-            () => ({ loggedIn: relogin.loggedIn }),
+            () => ({ loggedIn: checkConfigured ? relogin.loggedIn : null, checkConfigured }),
           );
         } finally {
           await lock.release();
