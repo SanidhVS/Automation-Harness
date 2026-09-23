@@ -89,14 +89,16 @@ describe('rerun init produces the Section 7.2 layout', () => {
     expect(created.code).toBe(0);
 
     const automationDir = join(dir, 'automations', 'job-search');
-    for (const name of ['flow.ts', 'run.cmd', 'run.sh', 'manifest.json']) {
+    for (const name of ['flow.ts', 'run.cmd', 'run.sh', 'run.command', 'manifest.json']) {
       const content = await readFile(join(automationDir, name), 'utf8');
       expect(content, `${name} has an unrendered placeholder`).not.toMatch(/\{\{\w+\}\}/);
     }
 
     if (process.platform !== 'win32') {
-      const runShStat = await stat(join(automationDir, 'run.sh'));
-      expect(runShStat.mode & 0o111).not.toBe(0);
+      for (const name of ['run.sh', 'run.command']) {
+        const launcherStat = await stat(join(automationDir, name));
+        expect(launcherStat.mode & 0o111, `${name} is not executable`).not.toBe(0);
+      }
     }
   });
 });

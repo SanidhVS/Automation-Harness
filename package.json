@@ -27,9 +27,11 @@
     "build:schemas": "tsx scripts/generate-schemas.ts",
     "lint": "eslint .",
     "format:check": "prettier --check .",
+    "pretest": "npm run build",
     "test": "vitest run",
     "test:unit": "vitest run test/unit",
     "test:integration": "vitest run test/integration",
+    "pretest:e2e": "npm run build",
     "test:e2e": "vitest run test/e2e"
   },
   "dependencies": {

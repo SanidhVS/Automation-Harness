@@ -37,7 +37,11 @@ export async function createAutomation(
   const dir = `${root}/automations/${automationName}`;
   await deps.writeFile(`${dir}/flow.ts`, await deps.renderTemplate('automation/flow.ts'));
   await deps.writeFile(`${dir}/run.cmd`, await deps.renderTemplate('launchers/run.cmd'));
-  const runShPath = `${dir}/run.sh`;
-  await deps.writeFile(runShPath, await deps.renderTemplate('launchers/run.sh'));
-  await deps.makeExecutable(runShPath);
+  // Same script twice: Linux file managers run `.sh`, but macOS Finder opens `.sh` in an
+  // editor and only runs `.command` files on double-click.
+  const posixLauncher = await deps.renderTemplate('launchers/run.sh');
+  for (const name of ['run.sh', 'run.command']) {
+    await deps.writeFile(`${dir}/${name}`, posixLauncher);
+    await deps.makeExecutable(`${dir}/${name}`);
+  }
 }
