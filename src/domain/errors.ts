@@ -71,3 +71,9 @@ export class CheckpointUnavailableError extends RerunError {
 export class WorkspaceNotFoundError extends RerunError {
   readonly code = EXIT_CODES.usageError;
 }
+
+/** A command needed to wait for Enter but stdin isn't a TTY, so the wait could never resolve
+ * (Section 9.3, 10.4 — Windows parity H4). Fails fast instead of hanging. */
+export class NonInteractiveError extends RerunError {
+  readonly code = EXIT_CODES.interactionRequired;
+}

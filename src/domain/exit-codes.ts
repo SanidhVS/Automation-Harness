@@ -7,6 +7,7 @@ export const EXIT_CODES = {
   invalidConfig: 4,
   profileLocked: 5,
   environmentProblem: 6,
+  interactionRequired: 7,
 } as const;
 
 export type ExitCode = (typeof EXIT_CODES)[keyof typeof EXIT_CODES];
