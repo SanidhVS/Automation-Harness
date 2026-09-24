@@ -46,6 +46,9 @@ export class PlaywrightBrowserLauncher implements BrowserLauncher {
         const context = await chromium.launchPersistentContext(options.profileDir, {
           headless: options.headless,
           channel: 'chrome',
+          // Let the page fill the actual window instead of a fixed 1280x720 viewport,
+          // so a maximized/resized window isn't left with blank space around the content.
+          viewport: null,
         });
         return { context, channelUsed: 'chrome' };
       } catch (cause) {
@@ -60,6 +63,7 @@ export class PlaywrightBrowserLauncher implements BrowserLauncher {
     try {
       const context = await chromium.launchPersistentContext(options.profileDir, {
         headless: options.headless,
+        viewport: null,
       });
       return { context, channelUsed: 'chromium' };
     } catch (cause) {
