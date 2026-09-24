@@ -21,27 +21,32 @@ describe a failure, use fix mode; otherwise use create mode.
 ## C. Create mode steps
 
 1. **Interview (one message, all questions together, concise).** Ask for: the goal in one
-   sentence; the site URL; which values change between runs (these become params, with
-   types and defaults); what to collect and in what format; how many items / when to stop;
-   what proves success; anything unusual (popups, MFA, CAPTCHA).
+   sentence; the site URL; whether the task needs a login; which values change between runs
+   (these become params, with types and defaults); what to collect and in what format; how
+   many items / when to stop; what proves success; anything unusual (popups, MFA, CAPTCHA).
 2. **Site.** Run `{{PRODUCT_NAME}} site list --json`. If the site is missing, run
    `{{PRODUCT_NAME}} site add <name> --base-url <url> [--login-url <url>]`.
-3. **Session.** Run `{{PRODUCT_NAME}} site login <site>`. Tell the user a browser window
-   will open and they must log in themselves. **Never** ask for, type, or store passwords
-   or one-time codes.
-4. **Logged-in indicator.** After login, run
+3. **Session — only if the interview said this task needs a login.** Run
+   `{{PRODUCT_NAME}} site login <site>`. This opens a real browser window and blocks until a
+   person presses Enter, so it only works when you have a live terminal to run it in (in
+   Claude Code, run it with the `!` prefix so the user gets a real terminal, not through a
+   background shell tool call, which will hang). Tell the user a browser window will open and
+   they must log in themselves. **Never** ask for, type, or store passwords or one-time codes.
+   Skip this step entirely for a task that needs no login.
+4. **Logged-in indicator (only if step 3 ran).** After login, run
    `{{PRODUCT_NAME}} inspect <site> --url <a page only visible when logged in> --interactive-only`
    and choose a stable indicator (role + name preferred). Save it with
    `{{PRODUCT_NAME}} site set-check <site> --url <url> --role <role> --name <name>`
    (or `--text <text>`, or `--url-not-matching <regex>`).
 5. **Explore, cheapest first:**
-   a. Offer the user a demonstration: `{{PRODUCT_NAME}} record <site> --name <automation>`.
-   The user performs the task once and closes the recorder; the recording is saved to
-   `.{{PRODUCT_NAME}}/recordings/<automation>.ts`. Read that file only.
-   b. If no demonstration: use
-   `{{PRODUCT_NAME}} inspect <site> --url <url> [--scope "role=<role>:<name>"] [--interactive-only]`
-   (`--scope` also accepts a CSS selector, e.g. `--scope "#results"`)
-   to see only what you need.
+   a. Use `{{PRODUCT_NAME}} inspect <site> --url <url> [--scope "role=<role>:<name>"]
+   [--interactive-only]` (`--scope` also accepts a CSS selector, e.g. `--scope "#results"`)
+   to see only what you need. This runs headless, with no wait on the user — prefer it.
+   b. If `inspect` can't get you far enough (the flow depends on exact interaction timing,
+   or the target state is hard to reach by URL), offer the user a demonstration instead:
+   `{{PRODUCT_NAME}} record <site> --name <automation>`. The user performs the task once and
+   closes the recorder; the recording is saved to `.{{PRODUCT_NAME}}/recordings/<automation>.ts`.
+   Read that file only.
    c. Only if a and b fail: use Playwright MCP in snapshot mode. Never request screenshots.
 6. **Scaffold.** `{{PRODUCT_NAME}} new <automation> --site <site>` creates the folder,
    manifest, flow template, and launchers.

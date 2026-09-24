@@ -575,6 +575,7 @@ test/
 | 4 | Invalid configuration (schema validation failed) |
 | 5 | Profile locked |
 | 6 | Environment problem (Node too old, browser missing) |
+| 7 | A step needs stdin to be a TTY (e.g. `waitForEnter`) but it isn't |
 
 ---
 

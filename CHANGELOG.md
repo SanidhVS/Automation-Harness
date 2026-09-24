@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased
+
+- Fixed: `rerun site login` (and any other prompt that waits for Enter) hung forever when
+  stdin wasn't a TTY — for example, run as a background tool call by an AI assistant rather
+  than in a real terminal. It now fails fast with a clear message and exit code 7.
+- Fixed: the `/rerun-automate` (`/automate`) skill ran `rerun site login` unconditionally on
+  every automation, even when the task needs no login, and offered `rerun record` (a manual
+  demonstration) before `rerun inspect` (headless, no waiting). Login is now gated on what the
+  interview established, and `inspect` is tried first.
+- The automated browser now opens with `viewport: null` so it fills the actual window instead
+  of a fixed 1280x720 area inside it.
+
 ## 0.1.0
 
 Initial implementation.

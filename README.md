@@ -245,6 +245,7 @@ The newest 20 runs per automation are kept; change `keepRuns` in `rerun.config.j
 | 4    | A settings file is invalid (the message lists every problem) |
 | 5    | Another run is using this site right now                     |
 | 6    | Environment problem (see `rerun doctor`)                     |
+| 7    | This step needs a real terminal — run the command yourself, not through an AI tool call |
 
 ## When an automation breaks
 
@@ -269,6 +270,10 @@ Then either:
   in once with `rerun site login <site>`; every run reuses it.
 - **The login window is a normal browser** with nothing automated attached, so sign-in
   pages that block automation (such as Google's) work.
+- **`rerun site login` needs a real terminal.** It waits for you to press Enter after logging
+  in, so it exits immediately with code 7 if run somewhere that can't do that (for example, an
+  AI assistant calling it as a background tool instead of a real terminal command). In Claude
+  Code, run it with the `!` prefix so it gets a real terminal.
 - **Sessions expire.** If a site has a login check (`rerun site set-check`), a run notices
   and either reopens the login window (when run from a terminal) or stops with exit
   code 3.
